@@ -22,12 +22,13 @@ sed "s#us.icr.io/REPLACE_WITH_YOUR_NAMESPACE/guestbook:v1#${IMAGE_V1}#" \
 kubectl apply -f "${DEPLOYMENT_V1_FILE}"
 kubectl apply -f service.yml
 
+kubectl scale deployment guestbook --replicas=0
 kubectl apply -f hpa.yml
 kubectl get hpa guestbook | tee "${OUTPUT_DIR}/task4_hpa_created.txt"
 
 cat <<'INSTRUCTIONS'
 Generate load from another IBM Cloud terminal while port forwarding is active:
-kubectl run -i --tty load-generator --rm --image=busybox:1.36.0 --restart=Never -- /bin/sh -c 'while sleep 0.01; do wget -q -O- http://guestbook:3000/; done'
+kubectl run -i --tty load-generator --rm --image=busybox:1.36.0 --restart=Never -- /bin/sh -c 'while sleep 0.01; do wget -q -O- http://guestbook:3000/hello; done'
 When replicas increase, return here and press Enter.
 INSTRUCTIONS
 read -r
