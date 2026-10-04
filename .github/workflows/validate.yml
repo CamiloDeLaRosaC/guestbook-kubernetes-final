@@ -1,0 +1,20 @@
+name: Validate guestbook
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Build guestbook container
+        run: docker build -t guestbook:test ./v1/guestbook
+      - name: Verify required application markers
+        run: |
+          grep -q 'EXPOSE 3000' v1/guestbook/Dockerfile
+          grep -q '<title>Guestbook - v2</title>' v1/guestbook/public/index.html
+          grep -q '<h1>Guestbook - v2</h1>' v1/guestbook/public/index.html
+          bash -n scripts/collect_ibm_cloud_evidence.sh
